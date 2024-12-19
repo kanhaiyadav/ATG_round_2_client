@@ -3,16 +3,18 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const signIn = createAsyncThunk(
     "user/signIn",
-    async (data, {rejectWithValue}) => {
+    async (data, { rejectWithValue }) => {
         try {
-            
-            const response = await fetch("http://localhost:3000/api/auth/signin", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
+            const response = await fetch(
+                `${import.meta.env.VITE_SERVER_URI}/api/auth/signin`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                }
+            );
             if (!response.ok) {
                 return rejectWithValue(await response.json());
             }
@@ -26,15 +28,17 @@ export const signIn = createAsyncThunk(
 
 export const signUp = createAsyncThunk(
     "user/signUp",
-    async (data, {rejectWithValue}) => {
+    async (data, { rejectWithValue }) => {
         try {
-            const response = await fetch("http://localhost:3000/api/auth/signup", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
+            const response = await fetch(`${import.meta.env.VITE_SERVER_URI}/api/auth/signup`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                }
+            );
             if (!response.ok) {
                 return rejectWithValue(await response.json());
             }
@@ -52,7 +56,7 @@ const initialState = {
         email: "",
         name: "",
     },
-    jwtToken: '',
+    jwtToken: "",
 };
 
 const userSlice = createSlice({
@@ -72,7 +76,7 @@ const userSlice = createSlice({
             state.userInfo = action.payload.data.user;
             state.jwtToken = action.payload.data.token;
         });
-    }
+    },
 });
 
 export const { setUserInfo, setJwtToken } = userSlice.actions;

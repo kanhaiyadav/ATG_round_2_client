@@ -5,14 +5,17 @@ export const createPost = createAsyncThunk(
     "post/createPost",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await fetch("http://localhost:3000/api/post/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${data.token}`,
-                },
-                body: JSON.stringify(data.formData),
-            });
+            const response = await fetch(`${import.meta.env.VITE_SERVER_URI}/api/post/`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${data.token}`,
+                        credentials: "include",
+                    },
+                    body: JSON.stringify(data.formData),
+                }
+            );
             if (!response.ok) {
                 return rejectWithValue(await response.json());
             }
@@ -29,7 +32,7 @@ export const updatePost = createAsyncThunk(
     "post/updatePost",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/post/${data.postId}`, {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_URI}/api/post/${data.postId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -53,7 +56,7 @@ export const deletePost = createAsyncThunk(
     "post/deletePost",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/post/${data.postId}`, {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_URI}/api/post/${data.postId}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${data.jwtToken}`,
@@ -76,7 +79,7 @@ export const fetchPosts = createAsyncThunk(
     "post/fetchPosts",
     async (token, { rejectWithValue }) => {
         try {
-            const response = await fetch("http://localhost:3000/api/post/", {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_URI}/api/post/`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -98,7 +101,7 @@ export const createComment = createAsyncThunk(
     "post/createComment",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/post/comment/${data.postId}`, {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_URI}/api/post/comment/${data.postId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -122,7 +125,7 @@ export const createInteraction = createAsyncThunk(
     "post/createInteraction",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/post/interaction/${data.postId}`, {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_URI}/api/post/interaction/${data.postId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
