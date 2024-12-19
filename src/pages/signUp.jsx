@@ -49,7 +49,7 @@ const SignUp = () => {
                         title: "Success 🎉",
                         description: "Singed in successfully",
                     });
-                    navigate("/");
+                    navigate("/signin");
                     reset();
                 })
                 .catch((error) => {

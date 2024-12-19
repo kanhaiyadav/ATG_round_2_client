@@ -5,10 +5,14 @@ import SignIn from "./pages/signIn";
 import { selectThemeMode } from "./redux/theme/theme.selector";
 import { useSelector } from "react-redux";
 import Home from "./pages/home";
+import { selectUserToken } from "./redux/user/user.selector";
 
 import { useEffect } from "react";
+import { Navigate } from "react-router-dom";
 
 function App() {
+
+    const token = useSelector(selectUserToken);
     const theme = useSelector(selectThemeMode);
 
     useEffect(() => {
@@ -23,7 +27,7 @@ function App() {
         <Routes>
             <Route path="signup" element={<SignUp />} />
             <Route path="signin" element={<SignIn />} />
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={token === "" ? <Navigate to={'/signin'} />:  <Home />} />
         </Routes>
     );
 }

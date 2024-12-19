@@ -1,7 +1,7 @@
 import Logo from "../shared/Logo";
 import ThemeSelector from "../shared/themeSelector";
-import { FiUser } from "react-icons/fi";
 import { FaRegBell } from "react-icons/fa";
+import UserProfile from "../shared/userProfile";
 import {
     Tooltip,
     TooltipContent,
@@ -11,7 +11,7 @@ import {
 
 const Navbar = () => {
     return (
-        <div className="flex gap-4 items-center px-4 py-2 text-gray-700 dark:text-white w-full shadow-sm border">
+        <div className="fixed bg-background top-0 left-0 w-full flex gap-4 items-center px-4 py-2 text-gray-700 dark:text-white shadow-sm border">
             <Logo />
             <div className="flex space-x-6 ml-auto mr-[30px]">
                 <TooltipProvider>
@@ -27,7 +27,7 @@ const Navbar = () => {
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger>
-                            <FaRegBell className="text-xl" />
+                            <FaRegBell className="text-lg" />
                         </TooltipTrigger>
                         <TooltipContent>
                             <p>Notifications</p>
@@ -37,7 +37,7 @@ const Navbar = () => {
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger>
-                            <FiUser className="text-xl" />
+                            <UserProfile />
                         </TooltipTrigger>
                         <TooltipContent>
                             <p>User</p>
