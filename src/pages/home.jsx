@@ -3,8 +3,6 @@ import PostForm from "../components/Global/PostForm";
 import { useState, useEffect } from "react";
 import { fetchPosts } from "@/redux/post/post.slice";
 import { useDispatch, useSelector } from "react-redux";
-import { selectOtherPosts } from "@/redux/post/post.selector";
-import Post from "@/components/shared/Post";
 import {
     Dialog,
     DialogContent,
@@ -15,11 +13,11 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { selectUserToken } from "@/redux/user/user.selector";
+import { Outlet } from "react-router-dom";
 
 const Home = () => {
     const [open, setOpen] = useState(false);
 
-    const otherPosts = useSelector(selectOtherPosts);
     const token = useSelector(selectUserToken);
     const dispatch = useDispatch();
 
@@ -50,11 +48,7 @@ const Home = () => {
                     </DialogContent>
                 </Dialog>
             </div>
-            <main className="flex-1 flex flex-col w-[50%] mt-[80px] gap-4 pb-10">
-                {otherPosts.map((post, index) => (
-                    <Post key={index} post={post} />
-                ))}
-            </main>
+            <Outlet/>
         </div>
     );
 };

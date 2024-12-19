@@ -1,4 +1,9 @@
 /* eslint-disable react/prop-types */
+import { FaRegTrashCan } from "react-icons/fa6";
+import { FiEdit } from "react-icons/fi";
+import { FaRegShareFromSquare } from "react-icons/fa6";
+import { MdReportGmailerrorred } from "react-icons/md";
+import { IoBookmarkOutline } from "react-icons/io5";
 import { FiUser } from "react-icons/fi";
 import { BsThreeDots } from "react-icons/bs";
 import { AiOutlineLike } from "react-icons/ai";
@@ -21,8 +26,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { createLocalComment, createComment } from "@/redux/post/post.slice";
 import { selectUserInfo, selectUserToken } from "@/redux/user/user.selector";
 import { createInteraction } from "@/redux/post/post.slice";
+import {
+    Menubar,
+    MenubarContent,
+    MenubarItem,
+    MenubarMenu,
+    MenubarSeparator,
+    // MenubarShortcut,
+    MenubarTrigger,
+} from "@/components/ui/menubar";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    // DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { deletePost } from "@/redux/post/post.slice";
+import PostForm from "../Global/PostForm";
 
 const Post = ({ post, ...otherPorps }) => {
+    const [postDelete, setPostDeleted] = useState(false);
+    const [open, setOpen] = useState(false);
     const [like, setLike] = useState(false);
     const [dislike, setDislike] = useState(false);
     const [likeCount, setLikeCount] = useState(post.likes);
@@ -59,7 +86,7 @@ const Post = ({ post, ...otherPorps }) => {
     }, [post.likes, post.dislikes]);
 
     useEffect(() => {
-        if(post.interactions.length === 0) return;
+        if (post.interactions.length === 0) return;
         post.interactions.find((interaction) => {
             if (interaction.owner === userInfo._id) {
                 if (interaction.type === "like") {
@@ -74,7 +101,7 @@ const Post = ({ post, ...otherPorps }) => {
     }, [post.interactions, userInfo._id]);
 
     return (
-        <Card {...otherPorps}>
+        <Card {...otherPorps} className={`${postDelete ? "hidden" : ""}`}>
             <CardHeader>
                 <div className="flex-between">
                     <div className="flex-start gap-4">
@@ -90,17 +117,96 @@ const Post = ({ post, ...otherPorps }) => {
                             <p className="text-xs mt-[-1px]">Few moments ago</p>
                         </div>
                     </div>
-                    <BsThreeDots className="text-lg" />
+
+                    <Menubar className="shadow-none border-none">
+                        <MenubarMenu>
+                            <MenubarTrigger>
+                                <BsThreeDots className="text-lg" />
+                            </MenubarTrigger>
+                            <MenubarContent className="min-w-[8rem] w-fit">
+                                <MenubarItem>
+                                    <div className="flex-center gap-2">
+                                        <FaRegShareFromSquare className="text-md" />
+                                        <span>Share</span>
+                                    </div>
+                                </MenubarItem>
+                                <MenubarItem>
+                                    <div className="flex-center gap-2">
+                                        <IoBookmarkOutline className="text-md" />
+                                        <span>Save</span>
+                                    </div>
+                                </MenubarItem>
+                                <MenubarItem>
+                                    <div className="flex-center gap-2">
+                                        <MdReportGmailerrorred className="text-md" />
+                                        <span>Report</span>
+                                    </div>
+                                </MenubarItem>
+                                {userInfo._id === post.owner._id && (
+                                    <>
+                                        <MenubarSeparator />
+                                        {/* <MenubarItem> */}
+                                            <Dialog
+                                                open={open}
+                                                onOpenChange={setOpen}
+                                            >
+                                                <DialogTrigger className="">
+                                                    <div className="flex-center gap-2 ml-2">
+                                                        <FiEdit className="text-sm" />
+                                                        <span className="text-sm">Edit</span>
+                                                    </div>
+                                                </DialogTrigger>
+                                                <DialogContent className="w-fit max-w-[70vw]">
+                                                    <DialogHeader>
+                                                        <DialogTitle>
+                                                            <span className="text-2xl">
+                                                                Create New Post
+                                                            </span>
+                                                        </DialogTitle>
+                                                        <DialogDescription>
+                                                            Fill in the
+                                                            following
+                                                            information to
+                                                            create a new post
+                                                        </DialogDescription>
+                                                    </DialogHeader>
+
+                                                    <PostForm
+                                                    setOpen={setOpen}
+                                                    post={post}
+                                                    type="edit"
+                                                    />
+                                                </DialogContent>
+                                            </Dialog>
+                                        {/* </MenubarItem> */}
+                                        <MenubarItem>
+                                            <div
+                                                className="flex-center gap-2"
+                                                onClick={() => {
+                                                    dispatch(
+                                                        deletePost({
+                                                            postId: post._id,
+                                                            jwtToken: token,
+                                                        })
+                                                    )
+                                                    setPostDeleted(true);
+                                                }}
+                                            >
+                                                <FaRegTrashCan className="text-md" />
+                                                <span>Delete</span>
+                                            </div>
+                                        </MenubarItem>
+                                    </>
+                                )}
+                            </MenubarContent>
+                        </MenubarMenu>
+                    </Menubar>
                 </div>
             </CardHeader>
             <CardContent>
                 <h1 className="text-xl font-semibold">{post.title}</h1>
                 <p>
-                    Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                    Possimus, eos! Quam maiores reprehenderit ullam, enim
-                    laborum aliquam, non reiciendis dignissimos maxime corrupti
-                    architecto debitis accusantium sapiente quia! Odio, magni
-                    nam.
+                    {post.content}
                 </p>
             </CardContent>
             <CardFooter>
@@ -142,7 +248,9 @@ const Post = ({ post, ...otherPorps }) => {
                                     setLike(false);
                                 }
                                 setDislikeCount(
-                                    dislike ? dislikeCount - 1 : dislikeCount + 1
+                                    dislike
+                                        ? dislikeCount - 1
+                                        : dislikeCount + 1
                                 );
                                 dispatch(
                                     createInteraction({

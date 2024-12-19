@@ -18,8 +18,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { createPost } from "@/redux/post/post.slice";
 import { MdOutlineCancel } from "react-icons/md";
 import { useToast } from "@/hooks/use-toast";
+import { updatePost } from "@/redux/post/post.slice";
 
-const PostForm = ({ setOpen }) => {
+const PostForm = ({ setOpen, post, type }) => {
     const [tag, setTag] = useState("");
     const { toast } = useToast();
     const token = useSelector(selectUserToken);
@@ -30,6 +31,16 @@ const PostForm = ({ setOpen }) => {
         content: "",
         tags: [],
     });
+
+    useState(() => {
+        if (post) {
+            setFormData({
+                title: post.title,
+                content: post.content,
+                tags: post.tags,
+            });
+        }
+    }, [post]);
 
     const reset = () => {
         setFormData({
@@ -42,25 +53,47 @@ const PostForm = ({ setOpen }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(formData);
-        dispatch(createPost({ formData, token }))
-            .unwrap()
-            .then(() => {
-                toast({
-                    title: "Success",
-                    description: "Post created successfully",
-                    type: "success",
+        if (type === "edit") {
+            dispatch(updatePost({ formData, token, postId: post._id }))
+                .unwrap()
+                .then(() => {
+                    toast({
+                        title: "Success",
+                        description: "Post updated successfully",
+                        type: "success",
+                    });
+                    setOpen(false);
+                    reset();
+                })
+                .catch(() => {
+                    toast({
+                        title: "Error",
+                        description: "An error occurred",
+                        type: "error",
+                    });
+                    setOpen(false);
                 });
-                setOpen(false);
-                reset();
-            })
-            .catch(() => {
-                toast({
-                    title: "Error",
-                    description: "An error occurred",
-                    type: "error",
+        } else {
+            dispatch(createPost({ formData, token }))
+                .unwrap()
+                .then(() => {
+                    toast({
+                        title: "Success",
+                        description: "Post created successfully",
+                        type: "success",
+                    });
+                    setOpen(false);
+                    reset();
+                })
+                .catch(() => {
+                    toast({
+                        title: "Error",
+                        description: "An error occurred",
+                        type: "error",
+                    });
+                    setOpen(false);
                 });
-                setOpen(false);
-            });
+        }
     };
 
     return (
@@ -157,7 +190,11 @@ const PostForm = ({ setOpen }) => {
                     Reset
                 </Button>
                 <Button form="post-form" type="submit">
-                    Create Post
+                    {
+                        type === "edit"
+                            ? "Update Post"
+                            : "Create Post"
+                    }
                 </Button>
             </CardFooter>
         </Card>

@@ -10,6 +10,9 @@ import { selectUserToken } from "./redux/user/user.selector";
 import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
 
+import Main from "./components/Global/Main";
+import MyPosts from "./components/Global/MyPosts";
+
 function App() {
 
     const token = useSelector(selectUserToken);
@@ -27,7 +30,10 @@ function App() {
         <Routes>
             <Route path="signup" element={<SignUp />} />
             <Route path="signin" element={<SignIn />} />
-            <Route path="/" element={token === "" ? <Navigate to={'/signin'} />:  <Home />} />
+            <Route path="/" element={token === "" ? <Navigate to={'/signin'} /> : <Home />} >
+                <Route index element={<Main />} />
+                <Route path="my-posts" element={<MyPosts />} />
+            </Route>
         </Routes>
     );
 }

@@ -25,6 +25,53 @@ export const createPost = createAsyncThunk(
     }
 );
 
+export const updatePost = createAsyncThunk(
+    "post/updatePost",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/post/${data.postId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${data.token}`,
+                },
+                body: JSON.stringify(data.formData),
+            });
+            if (!response.ok) {
+                return rejectWithValue(await response.json());
+            }
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.log(error);
+            return error;
+        }
+    }
+)
+
+export const deletePost = createAsyncThunk(
+    "post/deletePost",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/post/${data.postId}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${data.jwtToken}`,
+                },
+            });
+            if (!response.ok) {
+                return rejectWithValue(await response.json());
+            }
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.log(error);
+            return error;
+        }
+    }
+);
+
+
 export const fetchPosts = createAsyncThunk(
     "post/fetchPosts",
     async (token, { rejectWithValue }) => {
@@ -124,30 +171,7 @@ const postSlice = createSlice({
                 }
             }
         },
-        // createLocalInteraction: (state, action) => {
-        //     const { postId, type, owner } = action.payload;
-        //     const post = state.myPosts.find((post) => post._id === postId);
-        //     if (post) {
-
-        //         post.interactions.find((interaction) => {
-                    
-        //         });
-                
-                
-        //         post.interactions.push({
-        //             type,
-        //             owner,
-        //         });
-        //     } else {
-        //         const post2 = state.otherPosts.find((post) => post._id === postId);
-        //         if (post2) {
-        //             post2.interactions.push({
-        //                 type,
-        //                 owner,
-        //             });
-        //         }
-        //     }
-        // }
+        
     },
     extraReducers: (builder) => {
         builder.addCase(createPost.fulfilled, (state, action) => {
@@ -156,6 +180,15 @@ const postSlice = createSlice({
         builder.addCase(fetchPosts.fulfilled, (state, action) => {
             state.myPosts = action.payload.data.myPosts;
             state.otherPosts = action.payload.data.otherPosts;
+        });
+        builder.addCase(updatePost.fulfilled, (state, action) => {
+            const postIndex = state.myPosts.findIndex((post) => post._id === action.payload.data.post._id);
+            if (postIndex !== -1) {
+                state.myPosts[postIndex] = action.payload.data.post;
+            }
+        });
+        builder.addCase(deletePost.fulfilled, (state, action) => {
+            state.myPosts = state.myPosts.filter((post) => post._id !== action.payload.data.post._id);
         });
     },
 });
