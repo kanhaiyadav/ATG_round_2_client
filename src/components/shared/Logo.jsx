@@ -5,8 +5,8 @@ const Logo = () => {
         <Link to={"/"} className="flex items-center space-x-2">
             <img src="/logo.png" alt="" className="w-[50px]" />
             <h1>
-                <span>Link</span>
-                <span>Sphere</span>
+                <span className="font-semibold">Link</span>
+                <span className="text-xl text-primary">Sphere</span>
             </h1>
         </Link>
     );

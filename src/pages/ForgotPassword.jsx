@@ -12,7 +12,6 @@ import {
 } from "../components/ui/card";
 import { Label } from "../components/ui/label";
 import { useToast } from "../hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 import emailJs from "@emailjs/browser";
 
 const ForgotPassword = () => {
@@ -29,7 +28,6 @@ const ForgotPassword = () => {
         });
     };
 
-    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();

@@ -13,7 +13,8 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { selectUserToken } from "@/redux/user/user.selector";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const Home = () => {
     const [open, setOpen] = useState(false);
@@ -29,26 +30,33 @@ const Home = () => {
         <div className="flex-col-center">
             <Navbar />
             <div className="absolute top-[100px] left-10">
-                <Dialog open={open} onOpenChange={setOpen}>
-                    <DialogTrigger>Open</DialogTrigger>
-                    <DialogContent className="w-fit max-w-[70vw]">
-                        <DialogHeader>
-                            <DialogTitle>
-                                <span className="text-2xl">
-                                    Create New Post
-                                </span>
-                            </DialogTitle>
-                            <DialogDescription>
-                                Fill in the following information to create a
-                                new post
-                            </DialogDescription>
-                        </DialogHeader>
+                <div className="flex-col-center w-[140px] gap-2">
+                    <Dialog open={open} onOpenChange={setOpen}>
+                        <DialogTrigger className="w-full">
+                            <Button>Create New Post</Button>
+                        </DialogTrigger>
+                        <DialogContent className="w-fit max-w-[70vw]">
+                            <DialogHeader>
+                                <DialogTitle>
+                                    <span className="text-2xl">
+                                        Create New Post
+                                    </span>
+                                </DialogTitle>
+                                <DialogDescription>
+                                    Fill in the following information to create
+                                    a new post
+                                </DialogDescription>
+                            </DialogHeader>
 
-                        <PostForm setOpen={setOpen} />
-                    </DialogContent>
-                </Dialog>
+                            <PostForm setOpen={setOpen} />
+                        </DialogContent>
+                    </Dialog>
+                    <Button className="w-[98%]">
+                        <Link to="/my-posts">My Posts</Link>
+                    </Button>
+                </div>
             </div>
-            <Outlet/>
+            <Outlet />
         </div>
     );
 };
