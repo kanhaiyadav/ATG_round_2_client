@@ -12,6 +12,9 @@ import { Navigate } from "react-router-dom";
 
 import Main from "./components/Global/Main";
 import MyPosts from "./components/Global/MyPosts";
+import Auth from "./pages/Auth";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
 
@@ -28,9 +31,15 @@ function App() {
 
     return (
         <Routes>
+            <Route path="auth" element={<Auth />}>
+                <Route path="signup" element={<SignUp />} />
+                <Route path="signin" element={<SignIn />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="reset-password" element={<ResetPassword />} />
+            </Route>
             <Route path="signup" element={<SignUp />} />
             <Route path="signin" element={<SignIn />} />
-            <Route path="/" element={token === "" ? <Navigate to={'/signin'} /> : <Home />} >
+            <Route path="/" element={token === "" ? <Navigate to={'/auth/signin'} /> : <Home />} >
                 <Route index element={<Main />} />
                 <Route path="my-posts" element={<MyPosts />} />
             </Route>

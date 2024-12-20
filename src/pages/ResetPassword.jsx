@@ -1,8 +1,9 @@
-import { signUp } from "../redux/user/user.slice";
+import { resetPassword } from "../redux/user/user.slice";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
+import { Link } from "react-router-dom";
 import {
     Card,
     CardContent,
@@ -12,40 +13,46 @@ import {
     CardTitle,
 } from "../components/ui/card";
 import { Label } from "../components/ui/label";
-import { Link } from "react-router-dom";
 import { useToast } from "../hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
-const SignUp = () => {
+const ResetPassword = () => {
+    const { toast } = useToast();
+
     const [formData, setFormData] = useState({
-        name: "",
         email: "",
-        password: "",
+        newPassword: "",
         confirmPassword: "",
     });
 
     const reset = () => {
         setFormData({
-            name: "",
+            ...formData,
             email: "",
-            password: "",
+            newPassword: "",
             confirmPassword: "",
         });
     };
 
     const navigate = useNavigate();
-    const { toast } = useToast();
     const dispatch = useDispatch();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (formData.password === formData.confirmPassword) {
-            dispatch(signUp(formData))
+        console.log(formData);
+        if (formData.newPassword !== formData.confirmPassword) {
+            toast({
+                variant: "destructive",
+                title: "Error ⚠️",
+                description: "Passwords do not match",
+            });
+        } else {
+            dispatch(resetPassword(formData))
                 .unwrap()
                 .then(() => {
                     toast({
                         title: "Success 🎉",
-                        description: "Singed in successfully",
+                        description: "Password changed successfully",
                     });
                     navigate("/auth/signin");
                     reset();
@@ -58,49 +65,28 @@ const SignUp = () => {
                     });
                     console.log(error);
                 });
-        } else {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Password and confirm password should match",
-            });
         }
     };
     return (
         <>
             <Card className="w-[350px] ml-[250px]">
                 <CardHeader>
-                    <CardTitle>Create New Account</CardTitle>
+                    <CardTitle>Reset Password</CardTitle>
                     <CardDescription>
-                        Join us today and start exploring the world 😊
+                        create a new password for your account.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form id="form" onSubmit={handleSubmit}>
+                    <form id="form" onSubmit={handleSubmit} className="mb-2">
                         <div className="grid w-full items-center gap-4">
-                            <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    value={formData.name}
-                                    placeholder="Your full name"
-                                    required
-                                    onChange={(e) => {
-                                        setFormData({
-                                            ...formData,
-                                            name: e.target.value,
-                                        });
-                                    }}
-                                />
-                            </div>
                             <div className="flex flex-col space-y-1.5">
                                 <Label htmlFor="name">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
+                                    placeholder="Your email"
                                     value={formData.email}
                                     required
-                                    placeholder="Your email"
                                     onChange={(e) => {
                                         setFormData({
                                             ...formData,
@@ -110,29 +96,33 @@ const SignUp = () => {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="name">Password</Label>
+                                <Label htmlFor="new password">
+                                    New password
+                                </Label>
                                 <Input
-                                    id="password"
+                                    id="new password"
                                     type="password"
-                                    value={formData.password}
+                                    placeholder="Enter your new password"
+                                    value={formData.newPassword}
                                     required
-                                    placeholder="password"
                                     onChange={(e) => {
                                         setFormData({
                                             ...formData,
-                                            password: e.target.value,
+                                            newPassword: e.target.value,
                                         });
                                     }}
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="name">Confirm password</Label>
+                                <Label htmlFor="confirm password">
+                                    Confirm password
+                                </Label>
                                 <Input
-                                    id="confirm-password"
+                                    id="confirm password"
                                     type="password"
                                     value={formData.confirmPassword}
+                                    placeholder="Re-enter your new password"
                                     required
-                                    placeholder="Re-enter your password"
                                     onChange={(e) => {
                                         setFormData({
                                             ...formData,
@@ -148,17 +138,19 @@ const SignUp = () => {
                     <Button variant="outline" onClick={reset}>
                         Reset
                     </Button>
-                    <Button form="form" type="submit">Sign Up</Button>
+                    <Button form="form" type="submit">
+                        Reset password
+                    </Button>
                 </CardFooter>
             </Card>
             <div className="ml-[250px] text-center w-[350px] mt-8">
                 <span>
-                    Already have and account?
+                    Don&apos;t have an account?
                     <Link
-                        to={"/auth/signin"}
+                        to={"/auth/signup"}
                         className=" underline font-semibold text-primary"
                     >
-                        SignIn
+                        SignUp
                     </Link>
                 </span>
             </div>
@@ -166,4 +158,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default ResetPassword;

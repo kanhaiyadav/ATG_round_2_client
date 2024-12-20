@@ -46,7 +46,7 @@ const UserProfile = () => {
                         className="flex items-center space-x-2"
                         onClick={() => {
                             dispatch(logout());
-                            navigate("/signin");
+                            navigate('/auth/signin');
                             toast({
                                 title: "Success",
                                 description: "Logged out successfully",

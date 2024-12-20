@@ -50,6 +50,31 @@ export const signUp = createAsyncThunk(
     }
 );
 
+export const resetPassword = createAsyncThunk(
+    "user/resetPassword",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await fetch(
+                `${import.meta.env.VITE_SERVER_URI}/api/auth/reset-password`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                }
+            );
+            if (!response.ok) {
+                return rejectWithValue(await response.json());
+            }
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+);
+
 const initialState = {
     userInfo: {
         _id: "",
@@ -75,7 +100,7 @@ const userSlice = createSlice({
             console.log(action.payload);
             state.userInfo = action.payload.data.user;
             state.jwtToken = action.payload.data.token;
-        });
+        });    
     },
 });
 

@@ -1,6 +1,4 @@
-import { signIn } from "../redux/user/user.slice";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Link } from "react-router-dom";
@@ -15,62 +13,91 @@ import {
 import { Label } from "../components/ui/label";
 import { useToast } from "../hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import emailJs from "@emailjs/browser";
 
-const SignIn = () => {
+const ForgotPassword = () => {
     const { toast } = useToast();
 
     const [formData, setFormData] = useState({
         email: "",
-        password: "",
     });
 
     const reset = () => {
         setFormData({
             ...formData,
             email: "",
-            password: "",
         });
     };
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(formData);
-        dispatch(signIn(formData))
-            .unwrap()
-            .then(() => {
-                toast({
-                    title: "Success 🎉",
-                    description: "Singed in successfully",
-                });
-                navigate("/");
-                reset();
-            })
-            .catch((error) => {
-                toast({
-                    variant: "destructive",
-                    title: "Error ⚠️",
-                    description: error.message,
-                });
-                console.log(error);
+        const responce = await fetch(
+            `${import.meta.env.VITE_SERVER_URI}/api/auth/forgot-password`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            }
+        );
+        if (responce.ok) {
+            const result = await responce.json();
+            emailJs.init({
+                publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
             });
+            const templateParams = {
+                to_name: result.data.name,
+                to_email: result.data.email,
+                link: `${import.meta.env.VITE_SERVER_URI}/api/auth/verify?token=${result.data.token}`,
+            };
+            emailJs
+                .send(
+                    import.meta.env.VITE_EMAILJS_SERVICE_ID,
+                    import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+                    templateParams
+                )
+                .then(() => {
+                    toast({
+                        title: "Success 🎉",
+                        description: "Email sent successfully",
+                    });
+                    reset();
+                })
+                .catch((error) => {
+                    console.error("Failed to send email. Error:", error);
+                    toast({
+                        variant: "destructive",
+                        title: "Error ⚠️",
+                        description: "Failed to send email",
+                    });
+                });
+        } else {
+            const error = await responce.json();
+            toast({
+                variant: "destructive",
+                title: "Error ⚠️",
+                description: error.message,
+            });
+        }
     };
     return (
         <>
             <Card className="w-[350px] ml-[250px]">
                 <CardHeader>
-                    <CardTitle>Sign In</CardTitle>
+                    <CardTitle>Forgot Password</CardTitle>
                     <CardDescription>
-                        Welcome back! Please sign in to your account.
+                        We will send you a magic link to reset your password.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form id="form" onSubmit={handleSubmit} className="mb-2">
                         <div className="grid w-full items-center gap-4">
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="name">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -85,32 +112,15 @@ const SignIn = () => {
                                     }}
                                 />
                             </div>
-                            <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    value={formData.password}
-                                    placeholder="password"
-                                    required
-                                    onChange={(e) => {
-                                        setFormData({
-                                            ...formData,
-                                            password: e.target.value,
-                                        });
-                                    }}
-                                />
-                            </div>
                         </div>
                     </form>
-                    <Link to={'/auth/forgot-password'} className= "ml-2 text-sm font-semibold hover:underline hover:text-primary">Forgot password?</Link>
                 </CardContent>
                 <CardFooter className="flex justify-between">
                     <Button variant="outline" onClick={reset}>
                         Reset
                     </Button>
                     <Button form="form" type="submit">
-                        Sign In
+                        Get Magic Link
                     </Button>
                 </CardFooter>
             </Card>
@@ -129,4 +139,4 @@ const SignIn = () => {
     );
 };
 
-export default SignIn;
+export default ForgotPassword;
